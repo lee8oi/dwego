@@ -14,6 +14,12 @@ var h = hub{
 	connections: make(map[*connection]bool),
 }
 
+func (h *hub) Broadcast(s string) {
+	if len(s) > 0 {
+		h.broadcast <- []byte(s)
+	}
+}
+
 func (h *hub) run() {
 	for {
 		select {

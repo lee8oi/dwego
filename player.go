@@ -25,7 +25,7 @@ func (c *connection) SetNick(n string) {
 	old := c.player.Name
 	c.player.Name = n
 	if len(old) > 0 {
-		h.broadcast <- []byte(fmt.Sprintf("%s has changed nickname to %s", old, c.player.Name))
+		h.Broadcast(fmt.Sprintf("%s has changed nickname to %s", old, c.player.Name))
 	} else {
 		c.player.Location = 1
 		c.Send("nickname has been set to: " + c.player.Name)
