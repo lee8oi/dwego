@@ -23,6 +23,8 @@ func Command(c string) (s string) {
 		s = "west"
 	case "ni", "nick":
 		s = "nick"
+	case "ex", "exit", "exits":
+		s = "exits"
 	case "l", "look":
 		s = "look"
 	}
@@ -44,6 +46,10 @@ func (c *connection) Interpret(m []byte) {
 		case "look":
 			fmt.Println(rooms[c.player.Location].Description)
 			c.Send(rooms[c.player.Location].Description)
+		case "exits":
+			r := rooms[c.player.Location]
+
+			c.Send(r.Exits())
 		case "testing":
 			c.Send("testing command received")
 		default:
