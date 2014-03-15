@@ -5,6 +5,12 @@ import (
 	"strings"
 )
 
+func Parse(b []byte) (p []string) {
+	s := fmt.Sprintf("%s", b)
+	p = strings.Fields(s)
+	return
+}
+
 func Command(c string) (s string) {
 	switch strings.ToLower(c) {
 	case "s", "south":
@@ -23,9 +29,8 @@ func Command(c string) (s string) {
 	return
 }
 
-func Interpret(c *connection, msg []byte) {
-	str := fmt.Sprintf("%s", msg)
-	split := strings.Split(str, " ")
+func Interpret(c *connection, m []byte) {
+	split := Parse(m)
 	if cmd := Command(split[0]); cmd != "" {
 		switch cmd {
 		case "north", "south", "east", "west":
@@ -43,7 +48,7 @@ func Interpret(c *connection, msg []byte) {
 		case "testing":
 			c.send <- []byte("testing command received")
 		default:
-			h.broadcast <- msg
+			h.broadcast <- m
 		}
 	}
 }
