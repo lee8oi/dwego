@@ -17,7 +17,7 @@ func (c *connection) reader() {
 		if err != nil {
 			break
 		}
-		Interpret(c, message)
+		c.Interpret(message)
 		//h.broadcast <- message
 	}
 	c.ws.Close()

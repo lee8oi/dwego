@@ -29,13 +29,12 @@ func Command(c string) (s string) {
 	return
 }
 
-func Interpret(c *connection, m []byte) {
+func (c *connection) Interpret(m []byte) {
 	split := Parse(m)
 	if cmd := Command(split[0]); cmd != "" {
 		switch cmd {
 		case "north", "south", "east", "west":
-			c.send <- Move(c, cmd)
-			c.send <- []byte(rooms[c.player.Location].Description)
+			Move(c, cmd)
 		case "nick":
 			if len(split) == 1 {
 				c.send <- []byte("usage: nick <nickname>")
