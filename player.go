@@ -10,7 +10,7 @@ type Player struct {
 	Location int
 }
 
-func Move(c *connection, d string) {
+func (c *connection) Move(d string) {
 	if rooms[c.player.Location].Exit[d] > 0 {
 		c.player.Location = rooms[c.player.Location].Exit[d]
 		c.Send("going " + d)
@@ -21,7 +21,7 @@ func Move(c *connection, d string) {
 	return
 }
 
-func SetNick(c *connection, n string) {
+func (c *connection) SetNick(n string) {
 	old := c.player.Name
 	c.player.Name = n
 	if len(old) > 0 {

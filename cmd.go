@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func Parse(b []byte) (p []string) {
+func parse(b []byte) (p []string) {
 	s := fmt.Sprintf("%s", b)
 	p = strings.Fields(s)
 	return
@@ -30,17 +30,17 @@ func Command(c string) (s string) {
 }
 
 func (c *connection) Interpret(m []byte) {
-	split := Parse(m)
+	split := parse(m)
 	if cmd := Command(split[0]); cmd != "" {
 		switch cmd {
 		case "north", "south", "east", "west":
-			Move(c, cmd)
+			c.Move(cmd)
 		case "nick":
 			if len(split) == 1 {
 				c.send <- []byte("usage: nick <nickname>")
 				return
 			}
-			SetNick(c, split[1])
+			c.SetNick(split[1])
 		case "look":
 			fmt.Println(rooms[c.player.Location].Description)
 			c.Send(rooms[c.player.Location].Description)
