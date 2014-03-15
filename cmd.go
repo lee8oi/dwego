@@ -43,9 +43,9 @@ func (c *connection) Interpret(m []byte) {
 			SetNick(c, split[1])
 		case "look":
 			fmt.Println(rooms[c.player.Location].Description)
-			c.send <- []byte(rooms[c.player.Location].Description)
+			c.Send(rooms[c.player.Location].Description)
 		case "testing":
-			c.send <- []byte("testing command received")
+			c.Send("testing command received")
 		default:
 			h.broadcast <- m
 		}

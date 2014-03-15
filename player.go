@@ -13,10 +13,10 @@ type Player struct {
 func Move(c *connection, d string) {
 	if rooms[c.player.Location].Exit[d] > 0 {
 		c.player.Location = rooms[c.player.Location].Exit[d]
-		c.send <- []byte("going " + d)
-		c.send <- []byte(rooms[c.player.Location].Description)
+		c.Send("going " + d)
+		c.Send(rooms[c.player.Location].Description)
 	} else {
-		c.send <- []byte("there is nothing in that direction")
+		c.Send("there is nothing in that direction")
 	}
 	return
 }
@@ -28,7 +28,7 @@ func SetNick(c *connection, n string) {
 		h.broadcast <- []byte(fmt.Sprintf("%s has changed nickname to %s", old, c.player.Name))
 	} else {
 		c.player.Location = 1
-		c.send <- []byte("nickname has been set to: " + c.player.Name)
-		c.send <- []byte(rooms[1].Description)
+		c.Send("nickname has been set to: " + c.player.Name)
+		c.Send(rooms[1].Description)
 	}
 }

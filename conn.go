@@ -18,7 +18,6 @@ func (c *connection) reader() {
 			break
 		}
 		c.Interpret(message)
-		//h.broadcast <- message
 	}
 	c.ws.Close()
 }
@@ -31,6 +30,12 @@ func (c *connection) writer() {
 		}
 	}
 	c.ws.Close()
+}
+
+func (c *connection) Send(s string) {
+	if len(s) > 0 {
+		c.send <- []byte(s)
+	}
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
