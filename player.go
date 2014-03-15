@@ -15,8 +15,9 @@ func Move(c *connection, d string) {
 		c.player.Location = rooms[c.player.Location].Exit[d]
 		c.send <- []byte("going " + d)
 		c.send <- []byte(rooms[c.player.Location].Description)
+	} else {
+		c.send <- []byte("there is nothing in that direction")
 	}
-	c.send <- []byte("there is nothing in that direction")
 	return
 }
 
