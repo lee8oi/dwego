@@ -1,17 +1,35 @@
 package main
 
-type Room struct {
-	ID          int
-	Exit        map[string]int
-	Description string
+import (
+	"fmt"
+)
+
+type Exit struct {
+	Direction   string
+	Destination string
 }
 
-func (r *Room) Exits() (s string) {
+type Room struct {
+	Exits           []Exit
+	Description, ID string
+}
+
+func (r *Room) CheckExit(way string) (direction, room string) {
+	for _, val := range r.Exits {
+		if val.Direction == way {
+			direction = way
+			room = val.Destination
+		}
+	}
+	return
+}
+
+func (r *Room) GetExits() (s string) {
 	s = "Exits: "
 	c := 0
-	for key, _ := range r.Exit {
+	for _, val := range r.Exits {
 		c++
-		s += " " + key
+		s += " " + val.Direction
 	}
 	if c == 0 {
 		s += "none"
@@ -19,24 +37,49 @@ func (r *Room) Exits() (s string) {
 	return
 }
 
-func init() {
-	rooms[1] = Room{
-		ID:          1,
-		Description: "The first room!",
-		Exit:        make(map[string]int),
+func MapRooms(l []*Room) {
+	for key, val := range l {
+		id := l[key].ID
+		if rooms != nil {
+			rooms[id] = *val
+		}
 	}
-	rooms[1].Exit["north"] = 2
-	rooms[2] = Room{
-		ID:          2,
-		Description: "The second room!",
-		Exit:        make(map[string]int),
+}
+
+func LoadRooms(path string) {
+	rooms = make(map[string]Room)
+	var l []*Room
+	if err := loadJSON(path, &l); err != nil {
+		l = append(l, &Room{
+			ID:          "0",
+			Description: "The first room!",
+			Exits: []Exit{
+				Exit{Direction: "north", Destination: "1"},
+			},
+		})
+		l = append(l, &Room{
+			ID:          "1",
+			Description: "The second room!",
+			Exits: []Exit{
+				Exit{Direction: "south", Destination: "0"},
+				Exit{Direction: "east", Destination: "2"},
+			},
+		})
+		l = append(l, &Room{
+			ID:          "2",
+			Description: "The third room!",
+			Exits: []Exit{
+				Exit{Direction: "west", Destination: "1"},
+			},
+		})
+		if err := writeJSON("rooms.json", l); err != nil {
+			fmt.Println("error writing json: ", err)
+		} else {
+			fmt.Println("new default json written to 'rooms.json'")
+		}
+		MapRooms(l)
+	} else {
+		MapRooms(l)
+		fmt.Println(path + " loaded into map")
 	}
-	rooms[2].Exit["south"] = 1
-	rooms[2].Exit["east"] = 3
-	rooms[3] = Room{
-		ID:          2,
-		Description: "The third room!",
-		Exit:        make(map[string]int),
-	}
-	rooms[3].Exit["west"] = 2
 }

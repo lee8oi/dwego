@@ -8,19 +8,24 @@ package main
 
 import (
 	"flag"
+	//"fmt"
 	"log"
 	"net/http"
 	"text/template"
 )
 
-func homeHandler(c http.ResponseWriter, req *http.Request) {
-	homeTempl.Execute(c, req.Host)
-}
-
 var addr = flag.String("addr", ":8080", "http service address")
 var homeTempl = template.Must(template.ParseFiles("home.html"))
 var players = make(map[int]Player)
-var rooms = make(map[int]Room)
+var rooms map[string]Room
+
+func init() {
+	LoadRooms("rooms.json")
+}
+
+func homeHandler(c http.ResponseWriter, req *http.Request) {
+	homeTempl.Execute(c, req.Host)
+}
 
 func main() {
 	flag.Parse()

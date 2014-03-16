@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gorilla/websocket"
 	"net/http"
+	"time"
 )
 
 type connection struct {
@@ -18,6 +19,7 @@ func (c *connection) reader() {
 			break
 		}
 		c.Interpret(message)
+		time.Sleep(time.Second)
 	}
 	c.ws.Close()
 }
