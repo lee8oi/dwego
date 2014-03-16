@@ -14,7 +14,7 @@ type Room struct {
 	Description, ID string
 }
 
-//CheckExit returns the room index if an exit is available going 'way'. Empty string equals none.
+//CheckExit returns the room index if an exit is available going 'way'. Empty string means no exit that way.
 func (r *Room) CheckExit(way string) (room string) {
 	for _, val := range r.Exits {
 		if val.Direction == way {
@@ -37,7 +37,7 @@ func (r *Room) GetExits() (s string) {
 	return
 }
 
-//MapRooms takes a loaded json list of rooms and maps the ID's to World keys.
+//MapRooms takes a loaded json list of rooms and maps the ID's to World Rooms keys.
 func MapRooms(l []*Room) {
 	for key, val := range l {
 		id := l[key].ID
