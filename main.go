@@ -15,12 +15,18 @@ import (
 )
 
 var addr = flag.String("addr", ":8080", "http service address")
-var homeTempl = template.Must(template.ParseFiles("home.html"))
+var homeTempl = template.Must(template.ParseFiles("pub/home.html"))
+var scriptTmpl = template.Must(template.ParseFiles("pub/script.js"))
+
 var players = make(map[int]Player)
 var World world
 
 func homeHandler(c http.ResponseWriter, req *http.Request) {
 	homeTempl.Execute(c, req.Host)
+}
+
+func scriptHandler(c http.ResponseWriter, req *http.Request) {
+	scriptTmpl.Execute(c, req.Host)
 }
 
 type world struct {
@@ -73,7 +79,9 @@ func main() {
 	flag.Parse()
 	go h.run()
 	http.HandleFunc("/", homeHandler)
+	http.HandleFunc("/scripts", scriptHandler)
 	http.HandleFunc("/ws", wsHandler)
+	http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir("./pub"))))
 	if err := http.ListenAndServe(*addr, nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
