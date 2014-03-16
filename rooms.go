@@ -14,6 +14,7 @@ type Room struct {
 	Description, ID string
 }
 
+//CheckExit returns the room index if an exit is available going 'way'. Empty string equals none.
 func (r *Room) CheckExit(way string) (room string) {
 	for _, val := range r.Exits {
 		if val.Direction == way {
@@ -23,6 +24,7 @@ func (r *Room) CheckExit(way string) (room string) {
 	return
 }
 
+//GetExits returns a string containing the current rooms available exits.
 func (r *Room) GetExits() (s string) {
 	for _, val := range r.Exits {
 		s += " " + val.Direction

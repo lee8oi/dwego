@@ -19,7 +19,7 @@ func (c *connection) reader() {
 		if err != nil {
 			break
 		}
-		c.Interpret(message)
+		c.Parse(message)
 		time.Sleep(time.Second)
 	}
 	c.ws.Close()

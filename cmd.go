@@ -5,12 +5,7 @@ import (
 	"strings"
 )
 
-func parse(b []byte) (p []string) {
-	s := fmt.Sprintf("%s", b)
-	p = strings.Fields(s)
-	return
-}
-
+//Command is a simple function for mapping shortcuts to full command names.
 func Command(c string) (s string) {
 	switch strings.ToLower(c) {
 	case "s", "south":
@@ -31,18 +26,20 @@ func Command(c string) (s string) {
 	return
 }
 
-func (c *connection) Interpret(m []byte) {
-	split := parse(m)
-	if cmd := Command(split[0]); cmd != "" {
+//Parse parses a message and handles command if one exists.
+func (c *connection) Parse(m []byte) {
+	s := fmt.Sprintf("%s", m)
+	p := strings.Fields(s)
+	if cmd := Command(p[0]); cmd != "" {
 		switch cmd {
 		case "north", "south", "east", "west":
 			c.Move(cmd)
 		case "nick":
-			if len(split) == 1 {
+			if len(p) == 1 {
 				c.send <- []byte("usage: nick <nickname>")
 				return
 			}
-			c.SetNick(split[1])
+			c.SetNick(p[1])
 		case "look":
 			r := World.Rooms[c.player.Location]
 			c.Send(r.Description)
@@ -51,8 +48,6 @@ func (c *connection) Interpret(m []byte) {
 			c.Send(r.GetExits())
 		case "testing":
 			c.Send("testing command received")
-		default:
-			h.broadcast <- m
 		}
 	}
 }
