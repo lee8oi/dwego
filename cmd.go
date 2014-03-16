@@ -44,11 +44,10 @@ func (c *connection) Interpret(m []byte) {
 			}
 			c.SetNick(split[1])
 		case "look":
-			room := rooms[fmt.Sprintf("%s", c.player.Location)]
-			fmt.Println(room.Description)
-			c.Send(room.Description)
+			r := World.Rooms[c.player.Location]
+			c.Send(r.Description)
 		case "exits":
-			r := rooms[fmt.Sprintf("%s", c.player.Location)]
+			r := World.Rooms[c.player.Location]
 			c.Send(r.GetExits())
 		case "testing":
 			c.Send("testing command received")

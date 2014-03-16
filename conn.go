@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gorilla/websocket"
 	"net/http"
 	"time"
@@ -50,7 +51,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	c := &connection{send: make(chan []byte, 256), ws: ws}
 	h.register <- c
-	defer func() { h.unregister <- c }()
+	defer func() { fmt.Println(c.player.Name, " has disconnected"); h.unregister <- c }()
 	go c.writer()
 	c.send <- []byte("set your nickname with 'nick <nickname>'")
 	c.reader()

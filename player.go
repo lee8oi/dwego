@@ -10,11 +10,11 @@ type Player struct {
 }
 
 func (c *connection) Move(d string) {
-	room := rooms[fmt.Sprintf("%s", c.player.Location)]
-	if dr, ro := room.CheckExit(d); dr != "" {
-		c.player.Location = ro
-		c.Send("going " + dr)
-		c.Send(rooms[ro].Description)
+	room := World.Rooms[fmt.Sprintf("%s", c.player.Location)]
+	if r := room.CheckExit(d); r != "" {
+		c.player.Location = r
+		c.Send("going " + d)
+		c.Send(World.Rooms[r].Description)
 	} else {
 		c.Send("there is nothing in that direction")
 	}
@@ -28,9 +28,7 @@ func (c *connection) SetNick(n string) {
 		h.Broadcast(fmt.Sprintf("%s has changed nickname to %s", old, c.player.Name))
 	} else {
 		c.player.Location = "0"
-		//room :=
 		c.Send("nickname has been set to: " + c.player.Name)
-		r := rooms["0"]
-		c.Send(r.Description)
+		c.Send(World.Rooms["0"].Description)
 	}
 }
