@@ -35,6 +35,7 @@ func (c *connection) writer() {
 	c.ws.Close()
 }
 
+//Send converts a message string to []byte and passes message to the send channel.
 func (c *connection) Send(s string) {
 	if len(s) > 0 {
 		c.send <- []byte(s)
