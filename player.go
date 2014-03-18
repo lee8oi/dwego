@@ -9,6 +9,7 @@ type Player struct {
 	Name, Location string
 }
 
+//Move changes players location if there is an exit in the specified direction.
 func (c *connection) Move(d string) {
 	room := World.Rooms[fmt.Sprintf("%s", c.player.Location)]
 	if r := room.CheckExit(d); r != "" {
@@ -21,6 +22,7 @@ func (c *connection) Move(d string) {
 	return
 }
 
+//SetNick handles setting the player nickname. Initializes player object if necessary.
 func (c *connection) SetNick(n string) {
 	old := c.player.Name
 	c.player.Name = n
