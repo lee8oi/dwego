@@ -13,7 +13,6 @@ func writeJSON(path string, m interface{}) (e error) {
 		fmt.Println(e)
 		return
 	}
-
 	err = ioutil.WriteFile(path, b, 0644)
 	if err != nil {
 		e = err
