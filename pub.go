@@ -11,9 +11,9 @@ import (
 func init() {
 	err := os.Mkdir("./pub/", 0744)
 	if err == nil { //dir was created, likely needs files.
-		err = ioutil.WriteFile("./pub/styles.css", STYLES, 0644)
+		err = ioutil.WriteFile("./pub/style.css", STYLES, 0644)
 		if err != nil {
-			fmt.Println("Error writing styles.css: ", err)
+			fmt.Println("Error writing style.css: ", err)
 		}
 		err = ioutil.WriteFile("./pub/home.html", HTML, 0644)
 		if err != nil {
