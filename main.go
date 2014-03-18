@@ -11,12 +11,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"text/template"
 )
 
 var addr = flag.String("addr", ":8080", "http service address")
-var homeTempl = template.Must(template.ParseFiles("pub/home.html"))
-var scriptTmpl = template.Must(template.ParseFiles("pub/script.js"))
+var homeTempl *template.Template
+var scriptTmpl *template.Template
 
 var players = make(map[int]Player)
 var World world
@@ -72,7 +73,9 @@ func (w *world) LoadRooms(path string) {
 }
 
 func init() {
-	World.LoadRooms("rooms.json")
+	os.Mkdir("./world", 0744)
+	os.Mkdir("./conf/", 0700)
+	World.LoadRooms("world/rooms.json")
 }
 
 func main() {
