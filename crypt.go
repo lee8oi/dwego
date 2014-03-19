@@ -13,74 +13,74 @@ import (
 )
 
 //func main() {
-//	var C crypt
-//	C.key = []byte("j19cQ2lSY9TnAJtezePsCfJdKtJ5Pdj3")
-//	C.test2()
-//	//ciph := C.encrypt([]byte("Some crazy text."))
-//	//fmt.Println(ciph)
-//	//fmt.Println(C.decrypt(ciph))
+//	var c Crypt
+//	c.key = NewKey()
+//	type ColorGroup struct {
+//		ID     int
+//		Name   string
+//		Colors []string
+//	}
+//	group := ColorGroup{
+//		ID:     1,
+//		Name:   "Reds",
+//		Colors: []string{"Crimson", "Red", "Ruby", "Maroon"},
+//	}
+//	c.ObjectToFile("encryptedfile", &group)
+//	var ngroup ColorGroup
+//	c.FileToObject("encryptedfile", &ngroup)
+//	fmt.Println(ngroup.Name)
 //}
 
-type crypt struct {
+type Crypt struct {
 	key []byte
 }
 
-func (c *crypt) test() {
-	plaintext := []byte("some really really really long plaintext that goes on forever")
-	fmt.Printf("%s\n", plaintext)
-	ciphertext := c.encrypt(plaintext)
-	fmt.Printf("%x\n", ciphertext)
-	err := ioutil.WriteFile("ciphtest", ciphertext, 0644)
+//ObjectToFile converts a data object to json then saves it to file with Crypt.SaveFile.
+func (c *Crypt) ObjectToFile(path string, m interface{}) {
+	b, err := json.Marshal(m)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	c.SaveFile(path, b)
+}
+
+//FileToObject loads a file, saved with Crypt.ObjectToFile, into the given object variable.
+func (c *Crypt) FileToObject(path string, m interface{}) {
+	b, err := c.LoadFile(path)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	err = json.Unmarshal(b, m)
 	if err != nil {
 		fmt.Println(err)
 	}
-	b2, err := ioutil.ReadFile("ciphtest")
-	if err != nil {
-		fmt.Println(err)
-	}
-	result := c.decrypt(b2)
-	fmt.Printf("%s\n", result)
 }
 
-func (c *crypt) test2() error {
-	type ColorGroup struct {
-		ID     int
-		Name   string
-		Colors []string
-	}
-	group := ColorGroup{
-		ID:     1,
-		Name:   "Reds",
-		Colors: []string{"Crimson", "Red", "Ruby", "Maroon"},
-	}
-	b, err := json.Marshal(group)
-	if err != nil {
-		return err
-	}
-	c.encryptSave("encryptedjsfile", b)
-	str, err := c.decryptLoad("encryptedjsfile")
-	fmt.Println(str)
-	return err
-}
-
-func (c *crypt) encryptSave(path string, b []byte) error {
+//SaveFile encodes & encrypts byte data then writes it to file.
+func (c *Crypt) SaveFile(path string, b []byte) error {
 	return ioutil.WriteFile(path, c.encrypt(b), 0644)
 }
 
-func (c *crypt) decryptLoad(path string) (string, error) {
+//LoadFile decrypts & decodes a file that has been saved with Crypt.SaveFile.
+func (c *Crypt) LoadFile(path string) (b []byte, e error) {
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
-		return "", err
+		e = err
+	} else {
+		b = c.decrypt(b)
 	}
-	return c.decrypt(b), nil
+	return
 }
 
-func (c *crypt) encrypt(text []byte) []byte {
+//encrypt encodes bytes in base64 then encrypts data with AES.
+func (c *Crypt) encrypt(text []byte) []byte {
 	block, err := aes.NewCipher(c.key)
 	if err != nil {
 		panic(err)
 	}
-	b := c.encodeBase64(text)
+	b := encodeBase64(text)
 	ciphertext := make([]byte, aes.BlockSize+len(b))
 	iv := ciphertext[:aes.BlockSize]
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
@@ -91,7 +91,8 @@ func (c *crypt) encrypt(text []byte) []byte {
 	return ciphertext
 }
 
-func (c *crypt) decrypt(text []byte) string {
+//decrypt data that has been encrypted with Crypt.encrypt.
+func (c *Crypt) decrypt(text []byte) []byte {
 	block, err := aes.NewCipher(c.key)
 	if err != nil {
 		panic(err)
@@ -103,14 +104,14 @@ func (c *crypt) decrypt(text []byte) string {
 	text = text[aes.BlockSize:]
 	cfb := cipher.NewCFBDecrypter(block, iv)
 	cfb.XORKeyStream(text, text)
-	return string(c.decodeBase64(string(text)))
+	return decodeBase64(string(text))
 }
 
-func (c *crypt) encodeBase64(b []byte) string {
+func encodeBase64(b []byte) string {
 	return base64.StdEncoding.EncodeToString(b)
 }
 
-func (c *crypt) decodeBase64(s string) []byte {
+func decodeBase64(s string) []byte {
 	data, err := base64.StdEncoding.DecodeString(s)
 	if err != nil {
 		panic(err)
@@ -118,12 +119,13 @@ func (c *crypt) decodeBase64(s string) []byte {
 	return data
 }
 
-func random(size int) string {
+//NewKey returns a randomized 32 byte key to be used in encryption.
+func NewKey() []byte {
 	alphanum := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-	var bytes = make([]byte, size)
+	var bytes = make([]byte, 32)
 	rand.Read(bytes)
 	for i, b := range bytes {
 		bytes[i] = alphanum[b%byte(len(alphanum))]
 	}
-	return string(bytes)
+	return bytes
 }
