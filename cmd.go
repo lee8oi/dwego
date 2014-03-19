@@ -36,7 +36,7 @@ func (c *connection) Parse(m []byte) {
 			c.Move(cmd)
 		case "nick":
 			if len(p) == 1 {
-				c.send <- []byte("usage: nick <nickname>")
+				c.send <- []byte("Usage: nick <nickname>")
 				return
 			}
 			c.SetNick(p[1])
@@ -47,7 +47,7 @@ func (c *connection) Parse(m []byte) {
 			r := World.Rooms[c.player.Location]
 			c.Send(r.GetExits())
 		case "testing":
-			c.Send("testing command received")
+			c.Send("Testing command received.")
 		}
 	}
 }

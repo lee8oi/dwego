@@ -17,7 +17,7 @@ func (c *connection) Move(d string) {
 		c.Send("going " + d)
 		c.Send(World.Rooms[r].Description)
 	} else {
-		c.Send("there is nothing in that direction")
+		c.Send("You cannot go that way.")
 	}
 	return
 }
@@ -30,7 +30,7 @@ func (c *connection) SetNick(n string) {
 		h.Broadcast(fmt.Sprintf("%s has changed nickname to %s", old, c.player.Name))
 	} else {
 		c.player.Location = "0"
-		c.Send("nickname has been set to: " + c.player.Name)
+		c.Send("Nickname has been set to: " + c.player.Name)
 		c.Send(World.Rooms["0"].Description)
 	}
 }

@@ -23,9 +23,9 @@ func init() {
 		if err != nil {
 			fmt.Println("Error writing script.js: ", err)
 		}
-		fmt.Println("pub dir & web files created")
+		fmt.Println("Pub dir & web files created.")
 	} else {
-		fmt.Println("loading existing pub dir")
+		fmt.Println("Using existing pub directory.")
 	}
 	homeTempl = template.Must(template.ParseFiles("pub/home.html"))
 	scriptTmpl = template.Must(template.ParseFiles("pub/script.js"))

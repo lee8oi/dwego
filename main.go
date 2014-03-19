@@ -63,12 +63,12 @@ func (w *world) LoadRooms(path string) {
 		if err := writeJSON(path, l); err != nil {
 			fmt.Println("error writing json: ", err)
 		} else {
-			fmt.Println("new default json written to ", path)
+			fmt.Println("New default rooms json file written to " + path + ".")
 		}
 		MapRooms(l)
 	} else {
 		MapRooms(l)
-		fmt.Println(path + " loaded into map")
+		fmt.Println("Rooms in " + path + " are now loaded.")
 	}
 }
 
