@@ -8,7 +8,7 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	//"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -32,44 +32,6 @@ func scriptHandler(c http.ResponseWriter, req *http.Request) {
 
 type world struct {
 	Rooms map[string]Room
-}
-
-func (w *world) LoadRooms(path string) {
-	w.Rooms = make(map[string]Room)
-	var l []*Room
-	if err := loadJSON(path, &l); err != nil {
-		l = append(l, &Room{
-			ID:          "0",
-			Description: "The first room!",
-			Exits: []Exit{
-				Exit{Direction: "north", Destination: "1"},
-			},
-		})
-		l = append(l, &Room{
-			ID:          "1",
-			Description: "The second room!",
-			Exits: []Exit{
-				Exit{Direction: "south", Destination: "0"},
-				Exit{Direction: "east", Destination: "2"},
-			},
-		})
-		l = append(l, &Room{
-			ID:          "2",
-			Description: "The third room!",
-			Exits: []Exit{
-				Exit{Direction: "west", Destination: "1"},
-			},
-		})
-		if err := writeJSON(path, l); err != nil {
-			fmt.Println("error writing json: ", err)
-		} else {
-			fmt.Println("New default rooms json file written to " + path + ".")
-		}
-		MapRooms(l)
-	} else {
-		MapRooms(l)
-		fmt.Println("Rooms in " + path + " are now loaded.")
-	}
 }
 
 func init() {
