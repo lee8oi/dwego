@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"os/user"
 )
 
 //func main() {
@@ -33,6 +34,14 @@ import (
 
 type Crypt struct {
 	key []byte
+}
+
+func init() {
+	usr, err := user.Current()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(usr.HomeDir)
 }
 
 //ObjectToFile converts a data object to json then saves it to file with Crypt.SaveFile.
