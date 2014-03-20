@@ -50,7 +50,7 @@ func init() {
 	//crypt.testload("test")
 }
 
-//NewKey returns a randomized 32 byte key to be used in encryption.
+//NewKey sets Crypt.key to a randomized 32 byte key to be used in encryption.
 func (c *Crypt) NewKey() {
 	alphanum := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 	var bytes = make([]byte, 32)
