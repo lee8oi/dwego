@@ -10,38 +10,55 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"os"
 	"os/user"
 )
 
-//func main() {
-//	var c Crypt
-//	c.key = NewKey()
-//	type ColorGroup struct {
-//		ID     int
-//		Name   string
-//		Colors []string
-//	}
-//	group := ColorGroup{
-//		ID:     1,
-//		Name:   "Reds",
-//		Colors: []string{"Crimson", "Red", "Ruby", "Maroon"},
-//	}
-//	c.ObjectToFile("encryptedfile", &group)
-//	var ngroup ColorGroup
-//	c.FileToObject("encryptedfile", &ngroup)
-//	fmt.Println(ngroup.Name)
-//}
+var confdir string
+var keypath string
+var crypt Crypt
+
+const sep = string(os.PathSeparator)
 
 type Crypt struct {
 	key []byte
 }
 
 func init() {
+	//make sure confdir is available and secure
 	usr, err := user.Current()
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(usr.HomeDir)
+	confdir = usr.HomeDir + sep + ".dwego"
+	keypath = confdir + sep + "keyfile"
+	err = os.Mkdir(confdir, 0700)
+	if os.IsExist(err) {
+		//always (try to) make sure confdir permissions are secure
+		err := os.Chmod(confdir, 0700)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+	err = crypt.LoadKey(keypath)
+	if err != nil && !os.IsExist(err) {
+		crypt.NewKey()
+		crypt.SaveKey(keypath)
+	}
+	//Try these one at a time, reloading program between, to test homedir key file.
+	//crypt.testsave("test")
+	//crypt.testload("test")
+}
+
+//NewKey returns a randomized 32 byte key to be used in encryption.
+func (c *Crypt) NewKey() {
+	alphanum := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	var bytes = make([]byte, 32)
+	rand.Read(bytes)
+	for i, b := range bytes {
+		bytes[i] = alphanum[b%byte(len(alphanum))]
+	}
+	c.key = bytes
 }
 
 //ObjectToFile converts a data object to json then saves it to file with Crypt.SaveFile.
@@ -83,6 +100,21 @@ func (c *Crypt) LoadFile(path string) (b []byte, e error) {
 	return
 }
 
+func (c *Crypt) SaveKey(path string) error {
+	s := encodeBase64(c.key)
+	return ioutil.WriteFile(path, []byte(s), 0600)
+}
+
+func (c *Crypt) LoadKey(path string) (e error) {
+	b, err := ioutil.ReadFile(path)
+	if err != nil {
+		e = err
+	} else {
+		c.key = decodeBase64(string(b))
+	}
+	return
+}
+
 //encrypt encodes bytes in base64 then encrypts data with AES.
 func (c *Crypt) encrypt(text []byte) []byte {
 	block, err := aes.NewCipher(c.key)
@@ -116,6 +148,31 @@ func (c *Crypt) decrypt(text []byte) []byte {
 	return decodeBase64(string(text))
 }
 
+func (c *Crypt) testsave(path string) {
+	type ColorGroup struct {
+		ID     int
+		Name   string
+		Colors []string
+	}
+	group := ColorGroup{
+		ID:     1,
+		Name:   "Reds",
+		Colors: []string{"Crimson", "Red", "Ruby", "Maroon"},
+	}
+	c.ObjectToFile(path, &group)
+}
+
+func (c *Crypt) testload(path string) {
+	type ColorGroup struct {
+		ID     int
+		Name   string
+		Colors []string
+	}
+	var ngroup ColorGroup
+	c.FileToObject(path, &ngroup)
+	fmt.Println(ngroup.Name)
+}
+
 func encodeBase64(b []byte) string {
 	return base64.StdEncoding.EncodeToString(b)
 }
@@ -126,15 +183,4 @@ func decodeBase64(s string) []byte {
 		panic(err)
 	}
 	return data
-}
-
-//NewKey returns a randomized 32 byte key to be used in encryption.
-func NewKey() []byte {
-	alphanum := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-	var bytes = make([]byte, 32)
-	rand.Read(bytes)
-	for i, b := range bytes {
-		bytes[i] = alphanum[b%byte(len(alphanum))]
-	}
-	return bytes
 }

@@ -36,7 +36,7 @@ type world struct {
 
 func init() {
 	os.Mkdir("./world", 0744)
-	os.Mkdir("./conf/", 0700)
+	//os.Mkdir("./conf/", 0700)
 	World.LoadRooms("world/rooms.json")
 }
 
