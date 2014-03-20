@@ -100,11 +100,13 @@ func (c *Crypt) LoadFile(path string) (b []byte, e error) {
 	return
 }
 
+//SaveKey encodes current Crypt.key in Base64 and saves it to file.
 func (c *Crypt) SaveKey(path string) error {
 	s := encodeBase64(c.key)
 	return ioutil.WriteFile(path, []byte(s), 0600)
 }
 
+//LoadKey decodes a Base64 encoded key file & sets Crypt.key.
 func (c *Crypt) LoadKey(path string) (e error) {
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
