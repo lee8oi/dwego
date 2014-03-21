@@ -1,3 +1,6 @@
+//command system is to be rewritten. This is a temporary solution for testing.
+
+//
 package main
 
 import (
